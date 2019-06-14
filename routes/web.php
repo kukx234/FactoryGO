@@ -25,10 +25,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::name('signUpWithProductiveForm')->get('signUpWithProductive',function(){
     return view('auth.productive');
 });
-Route::name('signUpProducitve')->post('home','SignUpProductiveController@signUp');
+Route::name('signUpProducitve')->post('home','ProductiveUsersController@signUp');
 
 //change password
 Route::name('changePasswordForm')->get('changePassword', function(){
     return view('auth.passwords.changePassword');
 });
 Route::name('password.change')->post('changePassword','PasswordController@changePassword');
+
+//add user
+Route::name('addUser')->get('/addUser','ProductiveUsersController@addUserList');
+Route::name('search')->post('search', 'ProductiveUsersController@find');
+Route::name('saveNewUser')->get('save/{id}', 'ProductiveUsersController@saveNewUser');
