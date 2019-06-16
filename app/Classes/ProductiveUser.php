@@ -2,27 +2,23 @@
 
 namespace App\Classes;
 
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 
-class ProductiveUser 
+session_start();
+
+class ProductiveUser extends ProductiveClient
 {
     protected $email;
     protected $password;
-    protected $organization_id;
-
+    
     public function signUp(array $data)
     {
         $this->email = $data['email'];
         $this->password = $data['password'];
-
-        $client = new Client([
-            'base_uri' => 'https://api.productive.io/api/v2',
-        ]);
-    
+        
         try {
-            $response = $client->post('/api/v2/sessions',[
+            $response = $this->connect()->post('/api/v2/sessions',[
                 'headers' => [
                     'Content-Type' => 'application/vnd.api+json',
                 ],
@@ -35,11 +31,11 @@ class ProductiveUser
                         ]
                     ]
                 ]
-            ]);
-
+            ]);;
             $data = $response->getBody();
             $json = json_decode($data);
-            $token = $json->data->attributes->token;
+            $_SESSION['x_auth_token'] = $json->data->attributes->token;
+           
             
             $status_code = $response->getStatusCode();
     
@@ -49,13 +45,13 @@ class ProductiveUser
 
                 if(!$user){
 
-                    $username = $this->getUser($token);
+                    $username = $this->getUser();
                     
                     $createUser = $this->create([
                         'email' => $this->email,
                         'name' => $username,
-                        'x_auth_token' => $token,
-                        'organization_id' => $this->organization_id,
+                        'x_auth_token' => $_SESSION['x_auth_token'] ,
+                        'organization_id' => $_SESSION['organization_id'],
                     ]);
 
                     Auth::login($createUser);
@@ -75,25 +71,20 @@ class ProductiveUser
 
     }
 
-    public function getUser($token)
+    public function getUser()
     {
-        $client = new Client([
-            'base_uri' => 'https://api.productive.io/api/v2',
-        ]);
-
-        $response = $client->get('/api/v2/users',[
+        $response = $this->connect()->get('/api/v2/users',[
             'headers' => [
                 'Content-Type' => 'application/vnd.api+json',
-                'X-auth-token' => $token,
+                'X-auth-token' => $_SESSION['x_auth_token'],
             ],
         ]);
 
         $data = $response->getBody();
         $json = json_decode($data);
 
-        $this->organization_id = $json->data[0]->attributes->default_organization_id;
+        $_SESSION['organization_id']= $json->data[0]->attributes->default_organization_id;
         $username = $json->data[0]->attributes->first_name;
-        
 
         return $username;
     }
@@ -101,10 +92,6 @@ class ProductiveUser
 
     public static function create(array $data)
     {
-        if(!array_key_exists('x_auth_token', $data)){
-            $data['x_auth_token'] = null;
-            $data['organization_id'] = null;
-        }
 
         $user = User::where('email', '=' , $data['email'])->first();
 
@@ -112,8 +99,6 @@ class ProductiveUser
             return User::create([
                 'email' => $data['email'],
                 'name'  => $data['name'],
-                'x_auth_token' => $data['x_auth_token'],
-                'organization_id' => $data['organization_id'],
             ]);
         }else{
             return redirect()->back()->with([
@@ -126,15 +111,11 @@ class ProductiveUser
     {
         $user = User::where('email', '=', Auth::user()->email)->first();
 
-        $client = new Client([
-            'base_uri' => 'https://api.productive.io/api/v2',
-        ]);
-
-        $response = $client->get('/api/v2/people',[
+        $response = self::connect()->get('/api/v2/people',[
             'headers' => [
                 'Content-Type' => 'application/vnd.api+json',
-                'X-auth-token' => $user->x_auth_token,
-                'x-organization-id' => $user->organization_id,
+                'X-auth-token' => $_SESSION['x_auth_token'],
+                'x-organization-id' => $_SESSION['organization_id'],
             ],
         ]);
 
