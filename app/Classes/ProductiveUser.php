@@ -42,11 +42,9 @@ class ProductiveUser extends ProductiveClient
             if($status_code === 201){
 
                 $user = User::where('email', '=' , $this->email)->first();
+                $username = $this->getUser();
 
-                if(!$user){
-
-                    $username = $this->getUser();
-                    
+                if(!$user){       
                     $createUser = $this->create([
                         'email' => $this->email,
                         'name' => $username,
@@ -92,18 +90,18 @@ class ProductiveUser extends ProductiveClient
 
     public static function create(array $data)
     {
-
         $user = User::where('email', '=' , $data['email'])->first();
 
         if(!$user){
             return User::create([
                 'email' => $data['email'],
                 'name'  => $data['name'],
+                'role' => 3,
             ]);
         }else{
-            return redirect()->back()->with([
-                'Error' => 'User already exists',
-            ]);
+           return redirect()->route('addUser')->with([
+               'Error' => 'User already exists',
+           ]);
         }
     }
 

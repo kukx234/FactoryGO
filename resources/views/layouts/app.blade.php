@@ -35,9 +35,21 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('addUser') }}">Add User</a>
-                        </li>
+                        @if (Auth::user()->role === 1)
+                            <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('addUser') }}">Add User</a>
+                            </li>
+                        @endif
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
+                            aria-haspopup="true" aria-expanded="false">My requests</a>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{{ route('newRequestForm') }}">New request</a>
+                              <a class="dropdown-item" href="{{ route('pendingRequests') }}">Requests pending</a>
+                              <a class="dropdown-item" href="#">Finished request</a>
+                            </div>
+                          </li>
                         @endauth
                     </ul>
 

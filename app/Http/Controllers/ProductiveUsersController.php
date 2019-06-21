@@ -6,10 +6,10 @@ use App\Http\Requests\ProductiveUserRequest;
 use App\Classes\ProductiveUser;
 use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductiveUsersController extends Controller
-{
-   
+{   
     public function signUp(ProductiveUserRequest $request)
     {
         $productive_signup = new ProductiveUser;
@@ -31,9 +31,16 @@ class ProductiveUsersController extends Controller
     public static function addUserList()
     {   
         $allUsers = ProductiveUser::searchProductiveUsers();
-       
+        $users = [];
+
+        foreach ($allUsers as $user) {
+            if($user->attributes->email != Auth::user()->email){
+                $users[] = $user;
+            }
+        }
+    
         return view('addUser')->with([
-            'allUsers' => $allUsers,
+            'allUsers' => $users,
         ]);
     }
 
@@ -52,7 +59,7 @@ class ProductiveUsersController extends Controller
         }
 
         return redirect()->route('addUser')->with([
-            'Error' => "User with email $request->email is not registered",
+            'Error' => "User with email $request->email is not found",
         ]);
     }
 
@@ -61,14 +68,21 @@ class ProductiveUsersController extends Controller
         $allUsers = ProductiveUser::searchProductiveUsers();
 
         foreach ($allUsers as $user) {
-            if($user->id == $request->id){
+            if($user->id === $request->id){
                 ProductiveUser::create([
                     'email' => $user->attributes->email,
                     'name' => $user->attributes->first_name,
+                    'role' => 3,
                 ]);
             }
          }
-         
-         return redirect()->back();
+
+        if(!session('Error')){
+             return redirect()->route('addUser')->with([
+                'Success' => 'User added successfully',
+             ]);
+         }else{
+            return redirect()->route('addUser');
+         }
     }
 }

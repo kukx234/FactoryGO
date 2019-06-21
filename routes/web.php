@@ -30,10 +30,27 @@ Route::name('signUpProducitve')->post('home','ProductiveUsersController@signUp')
 //change password
 Route::name('changePasswordForm')->get('changePassword', function(){
     return view('auth.passwords.changePassword');
-});
+})->middleware('auth');
 Route::name('password.change')->post('changePassword','PasswordController@changePassword');
 
-//add user
-Route::name('addUser')->get('/addUser','ProductiveUsersController@addUserList');
-Route::name('search')->post('search', 'ProductiveUsersController@find');
-Route::name('saveNewUser')->get('save/{id}', 'ProductiveUsersController@saveNewUser');
+
+
+//administration
+Route::middleware(['auth', 'role:1'])->group(function() {
+
+    //add user
+    Route::name('addUser')->get('addUser','ProductiveUsersController@addUserList');
+    Route::name('search')->post('addUser', 'ProductiveUsersController@find');
+    Route::name('saveNewUser')->get('save/{id}', 'ProductiveUsersController@saveNewUser');
+
+    //Edit user
+    Route::name('editUser')->get('editUser/{id}', 'UsersController@edit');
+    Route::name('updateUser')->patch('editUser/{id}', 'UsersController@update');
+});
+
+//vacation requests
+Route::name('newRequestForm')->get('newRequest', function(){
+    return view('vacations.newRequest');
+});
+Route::name('newRequest')->post('newRequest','VacationController@create');
+Route::name('pendingRequests')->get('pendingRequests','VacationController@show');
