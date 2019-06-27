@@ -3,7 +3,7 @@
 namespace App\Classes;
 
 use Illuminate\Support\Facades\Auth;
-use App\User;
+use App\Models\User;
 
 session_start();
 

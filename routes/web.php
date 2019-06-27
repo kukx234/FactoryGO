@@ -36,8 +36,7 @@ Route::name('password.change')->post('changePassword','PasswordController@change
 
 
 //administration
-Route::middleware(['auth', 'role:1'])->group(function() {
-
+Route::middleware(['auth','role:1'])->group(function(){
     //add user
     Route::name('addUser')->get('addUser','ProductiveUsersController@addUserList');
     Route::name('search')->post('addUser', 'ProductiveUsersController@find');
@@ -48,9 +47,18 @@ Route::middleware(['auth', 'role:1'])->group(function() {
     Route::name('updateUser')->patch('editUser/{id}', 'UsersController@update');
 });
 
-//vacation requests
-Route::name('newRequestForm')->get('newRequest', function(){
-    return view('vacations.newRequest');
+Route::middleware(['auth', 'role:1,2'])->group(function(){
+    //all users vacations requests
+    Route::name('allVacationRequests')->get('vacationRequests', 'VacationController@allVacationRequests');
+    Route::name('requestDetails')->get('details/{id}', 'VacationController@requestDetails');
 });
-Route::name('newRequest')->post('newRequest','VacationController@create');
-Route::name('pendingRequests')->get('pendingRequests','VacationController@show');
+    //my vacations requests
+    Route::name('newRequestForm')->get('newRequest', function(){
+        return view('vacations.newRequest');
+    });
+    Route::name('newRequest')->post('newRequest','VacationController@create');
+    Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
+    Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
+
+    
+

@@ -2,12 +2,9 @@
 
 @section('content')
 <div class="container">
-        @if (session('Success'))
-            <div class="alert alert-success">{{ session('Success') }}</div>
-        @endif
     <div class="row justify-content-center">
         <table class="table">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
@@ -15,7 +12,7 @@
                     <th>To</th>
                     <th>Requested days</th>
                     <th>Requested at</th>
-                    <th>Actions</th>
+                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,7 +24,7 @@
                         <td>{{ $vacation->to }}</td>
                         <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
                         <td>{{ $vacation->created_at }}</td>
-                        <td><a href="{{ route('deleteRequest', $vacation->id) }}" class="btn btn-danger">Delete</a></td>
+                        <td><a href="{{ route('requestDetails', $vacation->id)}}" class="btn btn-primary">More info</a></td>
                     </tr>
                 @endforeach
             </tbody>

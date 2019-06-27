@@ -46,6 +46,16 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'approver' => [
+            'driver' => 'session',
+            'provider' => 'approvers',
+        ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
     ],
 
     /*
@@ -68,7 +78,17 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\Models\User::class,
+        ],
+
+        'approvers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Approver::class,
+        ],
+
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [
@@ -97,6 +117,18 @@ return [
             'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
+        ],
+
+        'approvers' => [
+            'provider' => 'approvers',
+            'table' => 'password_resets',
+            'expire' => 30,
+        ],
+
+        'approvers' => [
+            'provider' => 'approvers',
+            'table' => 'password_resets',
+            'expire' => 15,
         ],
     ],
 

@@ -41,6 +41,16 @@
                             </li>
                         @endif
 
+                        @if(Auth::user()->role === 1 || Auth::user()->role === 2)
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
+                                aria-haspopup="true" aria-expanded="false">All vacations request</a>
+                                <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ route('allVacationRequests') }}">Request waiting</a>
+                                <a class="dropdown-item" href="#">Finished requests</a>
+                                </div>
+                            </li>
+                        @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
                             aria-haspopup="true" aria-expanded="false">My requests</a>
@@ -49,7 +59,7 @@
                               <a class="dropdown-item" href="{{ route('pendingRequests') }}">Requests pending</a>
                               <a class="dropdown-item" href="#">Finished request</a>
                             </div>
-                          </li>
+                        </li>
                         @endauth
                     </ul>
 

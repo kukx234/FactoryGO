@@ -18,6 +18,7 @@ class CreateVacationsTable extends Migration
             $table->date('from');
             $table->date('to');
             $table->integer('users_id')->unsigned();
+            $table->tinyinteger('status');
             $table->timestamps();
 
             $table->foreign('users_id')->references('id')->on('users');
