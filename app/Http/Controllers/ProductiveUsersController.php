@@ -39,7 +39,7 @@ class ProductiveUsersController extends Controller
             }
         }
     
-        return view('addUser')->with([
+        return view('users.addUser')->with([
             'allUsers' => $users,
         ]);
     }
@@ -52,7 +52,7 @@ class ProductiveUsersController extends Controller
         foreach ($allUsers as $user) {
            if($user->attributes->email == $request->email){
                 $users[] = $user;
-                return view('addUser')->with([
+                return view('users.addUser')->with([
                     'allUsers' => $users,
                 ]);
            }
@@ -72,7 +72,6 @@ class ProductiveUsersController extends Controller
                 ProductiveUser::create([
                     'email' => $user->attributes->email,
                     'name' => $user->attributes->first_name,
-                    'role' => 3,
                 ]);
             }
          }

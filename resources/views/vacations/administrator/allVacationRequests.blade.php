@@ -2,6 +2,9 @@
 
 @section('content')
 <div class="container">
+    @if (session('Success'))
+        <div class="alert alert-success">{{ session('Success') }}</div> 
+    @endif
     <div class="row justify-content-center">
         <table class="table">
             <thead class="thead-dark">
@@ -18,8 +21,8 @@
             <tbody>
                 @foreach ($vacations as $vacation)
                     <tr>
-                        <td>{{ $vacation->users->name }}</td>
-                        <td>{{ $vacation->users->email }}</td>
+                        <td>{{ $vacation->user->name }}</td>
+                        <td>{{ $vacation->user->email }}</td>
                         <td>{{ $vacation->from }}</td>
                         <td>{{ $vacation->to }}</td>
                         <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>

@@ -35,13 +35,17 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
-                        @if (Auth::user()->role === 1)
-                            <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('addUser') }}">Add User</a>
-                            </li>
+                        @if (Role::check() === 1)
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
+                            aria-haspopup="true" aria-expanded="false">Users</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{{ route('allUsers') }}">All users</a>
+                                <a class="dropdown-item" href="{{ route('addUser') }}">Add User</a>
+                            </div>
                         @endif
 
-                        @if(Auth::user()->role === 1 || Auth::user()->role === 2)
+                        @if(Role::check() === 1 || Role::check() === 2)
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
                                 aria-haspopup="true" aria-expanded="false">All vacations request</a>

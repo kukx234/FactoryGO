@@ -21,8 +21,8 @@
             <tbody>
                 @foreach ($vacations as $vacation)
                     <tr>
-                        <td>{{ $vacation->users->name }}</td>
-                        <td>{{ $vacation->users->email }}</td>
+                        <td>{{ $vacation->user->name }}</td>
+                        <td>{{ $vacation->user->email }}</td>
                         <td>{{ $vacation->from }}</td>
                         <td>{{ $vacation->to }}</td>
                         <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>

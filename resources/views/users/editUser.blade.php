@@ -18,16 +18,21 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="name">Email</label>
-                                <input type="email" name="email" id="email" value="{{ $user->email }}" class="form-control"> 
+                                <label for="start_date">Start date</label>
+                                <input type="text" name="start_date" id="start_date" value="{{ $user->created_at }}" class="form-control"> 
                             </div>
 
-                            <div class="form-group">
-                                <label for="role">Role</label>
-                                <input type="number" name="role" id="role" value="{{ $user->role }}" class="form-control"> 
-                            </div>
+                            <label for="">Approver</label>
+                            <select class="custom-select mb-4">
+                                <option selected>Open this select menu</option>
+                                @foreach ($approvers as $approver)
+                                    <option value="{{ $approver->id }}">{{ $approver->name }}</option>
+                                @endforeach
+                            </select>
 
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="submit" class="btn btn-primary mr-4">Save and Activate</button>
+                            <button type="submit" class="btn btn-danger">Suspend</button>
+                            <button type="submit" class="btn btn-secondary">Cancel</button>
                         </form>
                     </div>
                 </div>

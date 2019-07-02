@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Classes\UserRoles;
 
 class CheckRole
 {
@@ -16,7 +17,7 @@ class CheckRole
     public function handle($request, Closure $next,...$roles)
     {
         foreach ($roles as $role) {
-            if($request->user()->role == $role){
+            if(UserRoles::check() == $role){
                 return $next($request); 
             }
         }

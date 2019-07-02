@@ -45,20 +45,25 @@ Route::middleware(['auth','role:1'])->group(function(){
     //Edit user
     Route::name('editUser')->get('editUser/{id}', 'UsersController@edit');
     Route::name('updateUser')->patch('editUser/{id}', 'UsersController@update');
+
+    Route::name('allUsers')->get('allUsers', 'UsersController@showAllUsers');
 });
 
 Route::middleware(['auth', 'role:1,2'])->group(function(){
     //all users vacations requests
     Route::name('allVacationRequests')->get('vacationRequests', 'VacationController@allVacationRequests');
     Route::name('requestDetails')->get('details/{id}', 'VacationController@requestDetails');
+    Route::name('approveRequest')->post('vacation/{id}', 'VacationController@approve');
 });
-    //my vacations requests
-    Route::name('newRequestForm')->get('newRequest', function(){
-        return view('vacations.newRequest');
-    });
-    Route::name('newRequest')->post('newRequest','VacationController@create');
-    Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
-    Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
+
+//my vacations requests
+Route::name('newRequestForm')->get('newRequest', function(){
+    return view('vacations.newRequest');
+});
+Route::name('newRequest')->post('newRequest','VacationController@create');
+Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
+Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
+
 
     
 

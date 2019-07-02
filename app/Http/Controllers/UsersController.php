@@ -5,25 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Classes\UsersQuery;
 
 class UsersController extends Controller
 {
-    
-    public static function allUsers()
-    {   
-        return User::where('email','!=', Auth::user()->email)->paginate(10);
+
+    public function showAllUsers()
+    {
+       return view('users.allUsers')->with([
+            'users' => UsersQuery::allUsers(),
+       ]);
     }
 
     public function edit($id)
     {
         $user = User::find($id);
-        
+        $approvers = UsersQuery::approvers();
         if(!$user){
             abort(404);
         }
 
-        return view('editUser', [
+        return view('users.editUser', [
             'user' => $user,
+            'approvers' => $approvers,
         ]);
     }
 

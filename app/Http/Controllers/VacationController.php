@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Vacation;
 use App\Models\User;
+use App\Classes\VacationQuerys;
+use App\Models\UserVacation;
 
 class VacationController extends Controller
 {
@@ -27,7 +29,7 @@ class VacationController extends Controller
                 'from' => $request->from,
                 'to' => $request->to,
                 'status' => 1,
-                'users_id' => $currentUserId,
+                'user_id' => $currentUserId,
             ]);
 
             //status 1 is pending
@@ -42,7 +44,7 @@ class VacationController extends Controller
 
     public function showMyRequests()
     {
-        $vacations = Vacation::with('users')->whereHas('users', function($query){
+        $vacations = Vacation::with('user')->whereHas('user', function($query){
             $query->where('email', Auth::user()->email);
         })->paginate(10);
 
@@ -53,8 +55,10 @@ class VacationController extends Controller
 
     public function allVacationRequests()
     {
-        $vacations = Vacation::with('users')->paginate(10);
-
+        $vacations = Vacation::with('user','userVacation')->whereDoesntHave('userVacation', function($query){
+            $query->where('user_id',  Auth::user()->id);
+        })->paginate(10);
+        
         return view('vacations.administrator.allVacationRequests')->with([
             'vacations' => $vacations,
         ]);
@@ -71,10 +75,35 @@ class VacationController extends Controller
 
     public function requestDetails($id)
     {
-        $vacations = Vacation::with('users')->where('id', $id)->get();
+        $vacations = Vacation::with('user')->where('id', $id)->get();
+        $approvers = UserVacation::with('user', 'vacation')->where('vacation_id', $id)->get();
+
+        foreach ($vacations as $vacation) {
+            return view('vacations.administrator.requestDetails')->with([
+                'vacation' => $vacation,
+                'approvers' => $approvers,
+            ]);
+        }
+    }
+
+    public function approve(Request $request, $id)
+    {
+       if($request->submit == 'approve'){
+            VacationQuerys::save([
+                'id' => $id,
+                'status' => 2,
+                'comment' => $request->comment,
+            ]);
+       }else{
+            VacationQuerys::save([
+                'id' => $id,
+                'status' => 3,
+                'comment' => $request->comment,
+            ]);
+       }
         
-        return view('vacations.administrator.requestDetails')->with([
-            'vacations' => $vacations,
-        ]);
+       return redirect()->route('allVacationRequests')->with([
+            'Success' => 'Response to request saved successfully',
+       ]);
     }
 }

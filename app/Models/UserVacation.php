@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Vacation extends Model
+class UserVacation extends Model
 {
+    public $table = "userVacations";
+
     protected $fillable = [
-        'from', 'to','user_id',
+        'user_id', 'vacation_id','comment','status'
     ];
 
     public function user()
@@ -15,8 +17,8 @@ class Vacation extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function userVacation()
+    public function vacation()
     {
-        return $this->hasMany('App\Models\UserVacation');
+        return $this->belongsTo('App\Models\Vacation');
     }
 }

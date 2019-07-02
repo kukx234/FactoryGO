@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','role',
+        'name', 'email', 'password',
     ];
 
     /**
@@ -40,5 +40,15 @@ class User extends Authenticatable
     public function vacation()
     {
         return $this->hasMany('App\Models\Vacation');
+    }
+
+    public function userVacation()
+    {
+        return $this->hasMany('App\Models\UserVacation');
+    }
+
+    public function role()
+    {
+        return $this->belongsToMany('App\Models\Role','user_roles');
     }
 }

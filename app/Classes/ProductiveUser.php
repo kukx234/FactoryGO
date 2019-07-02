@@ -93,11 +93,14 @@ class ProductiveUser extends ProductiveClient
         $user = User::where('email', '=' , $data['email'])->first();
 
         if(!$user){
-            return User::create([
+            $user = User::create([
                 'email' => $data['email'],
                 'name'  => $data['name'],
-                'role' => 3,
             ]);
+            $role_id = 3;
+            $user->role()->attach($role_id);
+
+            return $user;
         }else{
            return redirect()->route('addUser')->with([
                'Error' => 'User already exists',
