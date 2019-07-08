@@ -13,13 +13,12 @@ class CreateUsersApproversTable extends Migration
      */
     public function up()
     {
-        Schema::create('userApprovers', function (Blueprint $table) {
+        Schema::create('user_approvers', function (Blueprint $table) {
             $table->integer('user_id')->unsigned();
-            $table->integer('approver_id')->unsigned();
+            $table->integer('approver_id');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('approver_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -30,6 +29,6 @@ class CreateUsersApproversTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('userApprovers');
+        Schema::dropIfExists('user_approvers');
     }
 }

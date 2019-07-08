@@ -22,17 +22,16 @@
                                 <input type="text" name="start_date" id="start_date" value="{{ $user->created_at }}" class="form-control"> 
                             </div>
 
-                            <label for="">Approver</label>
-                            <select class="custom-select mb-4">
-                                <option selected>Open this select menu</option>
+                            <label for="approvers">Approver</label>
+                            <select name="approvers" id="approvers" class="custom-select mb-4" required>
                                 @foreach ($approvers as $approver)
                                     <option value="{{ $approver->id }}">{{ $approver->name }}</option>
                                 @endforeach
                             </select>
 
-                            <button type="submit" class="btn btn-primary mr-4">Save and Activate</button>
-                            <button type="submit" class="btn btn-danger">Suspend</button>
-                            <button type="submit" class="btn btn-secondary">Cancel</button>
+                            <button type="submit" class="btn btn-primary mr-4" name="submit" value="save">Save and Activate</button>
+                            <button type="submit" class="btn btn-danger" name="submit" value="suspend">Suspend</button>
+                            <a href="{{ route('allUsers') }}" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </div>

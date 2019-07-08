@@ -8,6 +8,7 @@ use App\Models\Vacation;
 use App\Models\User;
 use App\Classes\VacationQuerys;
 use App\Models\UserVacation;
+use App\Classes\UserRoles;
 
 class VacationController extends Controller
 {
@@ -32,9 +33,8 @@ class VacationController extends Controller
                 'user_id' => $currentUserId,
             ]);
 
-            //status 1 is pending
             //status 2 is approved
-            //status 3 is denied
+            //status 3 denied
             
             return redirect()->route('home')->with([
                 'Success' => 'New vacation request successfully added',
@@ -44,7 +44,7 @@ class VacationController extends Controller
 
     public function showMyRequests()
     {
-        $vacations = Vacation::with('user')->whereHas('user', function($query){
+        $vacations = Vacation::with('user')->where('status', 1)->whereHas('user', function($query){
             $query->where('email', Auth::user()->email);
         })->paginate(10);
 
@@ -55,10 +55,13 @@ class VacationController extends Controller
 
     public function allVacationRequests()
     {
-        $vacations = Vacation::with('user','userVacation')->whereDoesntHave('userVacation', function($query){
-            $query->where('user_id',  Auth::user()->id);
-        })->paginate(10);
-        
+        if(UserRoles::check() === 1){
+           $vacations =  VacationQuerys::adminVacationRequests();
+
+        }else{
+            $vacations = VacationQuerys::approverVacationRequests();
+        }
+            
         return view('vacations.administrator.allVacationRequests')->with([
             'vacations' => $vacations,
         ]);
@@ -87,13 +90,14 @@ class VacationController extends Controller
     }
 
     public function approve(Request $request, $id)
-    {
+    {   
        if($request->submit == 'approve'){
             VacationQuerys::save([
                 'id' => $id,
                 'status' => 2,
                 'comment' => $request->comment,
             ]);
+
        }else{
             VacationQuerys::save([
                 'id' => $id,
@@ -101,9 +105,68 @@ class VacationController extends Controller
                 'comment' => $request->comment,
             ]);
        }
+
+       VacationQuerys::checkIfFinished($id);
         
        return redirect()->route('allVacationRequests')->with([
             'Success' => 'Response to request saved successfully',
        ]);
+    }
+
+    public function myFinishedRequests()
+    {
+
+        $vacations = Vacation::with('userVacation')->where([
+            ['status',2 ],
+            ['user_id', Auth::user()->id],
+            ])->get();
+
+        foreach ($vacations as $vacation) {
+            echo $vacation->userVacation;
+        }
+        die();
+     /*   $userVacation = UserVacation::where('vacation_id', 4)->get();
+        echo $userVacation;
+        die(); */
+        return view('vacations.myFinishedRequests')->with([
+            'vacations' => $vacations,
+        ]);     
+    }
+
+    public function allFinishedRequests()
+    {
+        if(UserRoles::check() === 1){
+            $vacations = Vacation::where('status', 2)->paginate(10);
+        }else{
+            $vacations = Vacation::where('status', 2)->whereHas('userVacation', function($query){
+                $query->where('user_id', Auth::user()->id);
+            })->paginate(10);
+        }
+
+        return view('vacations.administrator.allFinishedRequests')->with([
+            'vacations' => $vacations,
+        ]);
+    }
+
+    public function allFinishedRequestDetails($id)
+    {
+        $status = 2;
+        $vacations = Vacation::with('user')->where('id', $id)->paginate(10);
+        $approvers = UserVacation::where('vacation_id', $id)->get();
+     
+        foreach ($approvers as $approver) {
+            if($approver->status === 3){
+                $status = 3;
+            }
+        } 
+        
+        foreach ($vacations as $vacation) {
+            return view('vacations.administrator.allFinishedRequestDetails')->with([
+                'vacation' => $vacation,
+                'approvers' => $approvers,
+                'status' => $status,
+            ]);
+        }
+       
     }
 }

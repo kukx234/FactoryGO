@@ -35,13 +35,15 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
-                        @if (Role::check() === 1)
+                        @if (Role::check() != 3)
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
                             aria-haspopup="true" aria-expanded="false">Users</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('allUsers') }}">All users</a>
-                                <a class="dropdown-item" href="{{ route('addUser') }}">Add User</a>
+                                @if (Role::check() === 1)
+                                    <a class="dropdown-item" href="{{ route('addUser') }}">Add User</a>
+                                @endif
                             </div>
                         @endif
 
@@ -51,7 +53,7 @@
                                 aria-haspopup="true" aria-expanded="false">All vacations request</a>
                                 <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('allVacationRequests') }}">Request waiting</a>
-                                <a class="dropdown-item" href="#">Finished requests</a>
+                                <a class="dropdown-item" href="{{ route('allFinishedRequests') }}">Finished requests</a>
                                 </div>
                             </li>
                         @endif
@@ -61,7 +63,7 @@
                             <div class="dropdown-menu">
                               <a class="dropdown-item" href="{{ route('newRequestForm') }}">New request</a>
                               <a class="dropdown-item" href="{{ route('pendingRequests') }}">Requests pending</a>
-                              <a class="dropdown-item" href="#">Finished request</a>
+                              <a class="dropdown-item" href="{{ route('myFinishedRequests') }}">Finished request</a>
                             </div>
                         </li>
                         @endauth

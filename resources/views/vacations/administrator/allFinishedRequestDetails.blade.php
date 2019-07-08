@@ -12,6 +12,7 @@
                     <th>To</th>
                     <th>Requested days</th>
                     <th>Requested at</th>
+                    <th>Finished status</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,6 +21,13 @@
                <td>{{ $vacation->to }}</td>
                <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
                <td>{{ $vacation->created_at }}</td>
+               <td>
+                   @if ($status === 3)
+                        DENIED
+                   @else
+                       APPROVED
+                   @endif
+               </td>
             </tbody>
         </table>
 
@@ -45,15 +53,5 @@
                 </tbody>
             </table>
     </div>
-        <form action="{{ route('approveRequest', $vacation->id) }}" method="POST">
-            @csrf
-            <div class="form-group mt-5">
-                <label for="comment">Comment</label>
-                <textarea name="comment" id="comment"  cols="30" rows="10" class="form-control" required></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary" value="approve" name="submit">Approve</button>
-            <button type="submit" class="btn btn-secondary"  value="dissaprove" name="submit">Disapprove</button>
-        </form>
 </div>
 @endsection

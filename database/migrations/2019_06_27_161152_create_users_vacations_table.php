@@ -13,7 +13,7 @@ class CreateUsersVacationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('userVacations', function (Blueprint $table) {
+        Schema::create('user_vacations', function (Blueprint $table) {
             $table->integer('user_id')->unsigned();
             $table->integer('vacation_id')->unsigned();
             $table->string('comment');
@@ -32,6 +32,6 @@ class CreateUsersVacationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('userVacations');
+        Schema::dropIfExists('user_vacations');
     }
 }

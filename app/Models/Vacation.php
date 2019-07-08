@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Vacation extends Model
 {
     protected $fillable = [
-        'from', 'to','user_id',
+        'from', 'to','user_id','status',
     ];
 
     public function user()
