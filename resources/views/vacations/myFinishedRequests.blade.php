@@ -27,7 +27,7 @@
                         <td>{{ $vacation->to }}</td>
                         <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
                         <td>{{ $vacation->created_at }}</td>
-                        
+                        <td><a href="{{ route('myFinishedRequestDetails', $vacation->id) }}" class="btn btn-primary">More info</a></td>
                     </tr>
                 @endforeach
             </tbody>

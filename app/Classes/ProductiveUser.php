@@ -4,6 +4,7 @@ namespace App\Classes;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Classes\UserRoles;
 
 session_start();
 
@@ -97,10 +98,11 @@ class ProductiveUser extends ProductiveClient
                 'email' => $data['email'],
                 'name'  => $data['name'],
             ]);
-            $role_id = 3;
-            $user->role()->attach($role_id);
+        
+        $user->role()->attach(UserRoles::setAsEmployee());
+        
+        return $user;
 
-            return $user;
         }else{
            return redirect()->route('addUser')->with([
                'Error' => 'User already exists',

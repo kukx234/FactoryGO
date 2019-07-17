@@ -36,7 +36,7 @@ Route::name('password.change')->post('changePassword','PasswordController@change
 
 
 //administration
-Route::middleware(['auth','role:1'])->group(function(){
+Route::middleware(['auth','role:Admin'])->group(function(){
     //add user
     Route::name('addUser')->get('addUser','ProductiveUsersController@addUserList');
     Route::name('search')->post('addUser', 'ProductiveUsersController@find');
@@ -48,7 +48,7 @@ Route::middleware(['auth','role:1'])->group(function(){
    
 });
 
-Route::middleware(['auth', 'role:1,2'])->group(function(){
+Route::middleware(['auth', 'role:Admin,Approver'])->group(function(){
     //all users vacations requests
     Route::name('allVacationRequests')->get('vacationRequests', 'VacationController@allVacationRequests');
     Route::name('requestDetails')->get('details/{id}', 'VacationController@requestDetails');
@@ -63,13 +63,19 @@ Route::middleware(['auth', 'role:1,2'])->group(function(){
 });
 
 //my vacations requests
-Route::name('newRequestForm')->get('newRequest', function(){
-    return view('vacations.newRequest');
+
+Route::middleware('auth')->group(function(){
+    //My Requests
+    Route::name('newRequestForm')->get('newRequest', function(){
+        return view('vacations.newRequest');
+    });
+    Route::name('newRequest')->post('newRequest','VacationController@create');
+    Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
+    Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
+    Route::name('myFinishedRequests')->get('myFinishedRequests', 'VacationController@myFinishedRequests');
+    Route::name('myFinishedRequestDetails')->get('myFinishedRequestDetails/{id}', 'VacationController@myFinishedRequestDetails');
+    
 });
-Route::name('newRequest')->post('newRequest','VacationController@create');
-Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
-Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
-Route::name('myFinishedRequests')->get('myFinishedRequests', 'VacationController@myFinishedRequests');
 
 
 

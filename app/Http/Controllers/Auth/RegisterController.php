@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Classes\UserRoles;
 
 class RegisterController extends Controller
 {
@@ -70,9 +71,8 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
         
-        $role_id = 3;
-        $user->role()->attach($role_id);
-
+        $user->role()->attach(UserRoles::setAsEmployee());
+        
         return $user;
     }
 }

@@ -226,6 +226,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Role' => App\Classes\UserRoles::class,
+        'Roles' => App\Models\Role::class,
+        'Status' => App\Models\UserVacation::class,
 
     ],
 

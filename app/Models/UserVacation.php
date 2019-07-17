@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserVacation extends Model
 {
+    const APPROVED = 'Approved';
+    const DENIED = 'Denied';
+    
     public $table = "user_vacations";
 
     protected $fillable = [

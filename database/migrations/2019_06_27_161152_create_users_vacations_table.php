@@ -17,7 +17,7 @@ class CreateUsersVacationsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('vacation_id')->unsigned();
             $table->string('comment');
-            $table->tinyinteger('status');
+            $table->string('status');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

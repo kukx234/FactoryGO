@@ -33,14 +33,14 @@ class VacationQuerys
     
             if(count($user_vacation_approvers) >= count($user_approvers)){
                 //u tablici vacation ce biti status 1 pending i status 2 finished
-                Vacation::where('id', $id)->update([ 'status' => 2 ]);
+                Vacation::where('id', $id)->update([ 'status' => Vacation::FINISHED ]);
             }
         }
     }
 
     public static function adminVacationRequests()
     {
-        return Vacation::with('user','userVacation')->where('status', 1)
+        return Vacation::with('user','userVacation')->where('status', Vacation::PENDING)
             ->whereDoesntHave('userVacation', function($query){
                 $query->where('user_id',  Auth::user()->id);
             })->paginate(10);
@@ -48,7 +48,7 @@ class VacationQuerys
 
     public static function approverVacationRequests()
     {
-        return Vacation::with('user','userVacation')->where('status',1)
+        return Vacation::with('user','userVacation')->where('status', Vacation::PENDING)
             ->whereDoesntHave('userVacation', function($query){
                 $query->where('user_id', Auth::user()->id);
             })
@@ -57,5 +57,28 @@ class VacationQuerys
                     $q->where('approver_id', Auth::user()->id);
                 });
             })->paginate(10);
+    }
+
+    public static function requestDetails($id)
+    {
+        $status = 2;
+        $vacations = Vacation::with('user')->where('id', $id)->get();
+        $approvers = UserVacation::where('vacation_id', $id)->get();
+     
+        foreach ($approvers as $approver) {
+            if($approver->status === 3){
+                $status = 3;
+            }
+        } 
+
+        foreach ($vacations as $vacation) {
+            return view('vacations.myFinishedRequestDetails')->with([
+                'vacation' => $vacation,
+                'approvers' => $approvers,
+                'status' => $status,
+            ]);
+        }
+        
+
     }
 }

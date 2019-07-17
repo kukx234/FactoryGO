@@ -2,6 +2,11 @@
 
 @section('content')
 <div class="container">
+
+    @if (session('Success'))
+        <div class="alert alert-success">{{ session('Success') }}</div>
+    @endif
+
     <div class="row justify-content-center">
         <h3>All users list</h3>
     </div>

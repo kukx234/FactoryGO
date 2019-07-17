@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Classes\VacationQuerys;
 use App\Models\UserVacation;
 use App\Classes\UserRoles;
+use App\Models\Role;
 
 class VacationController extends Controller
 {
@@ -29,12 +30,9 @@ class VacationController extends Controller
             Vacation::create([
                 'from' => $request->from,
                 'to' => $request->to,
-                'status' => 1,
+                'status' => Vacation::PENDING,
                 'user_id' => $currentUserId,
             ]);
-
-            //status 2 is approved
-            //status 3 denied
             
             return redirect()->route('home')->with([
                 'Success' => 'New vacation request successfully added',
@@ -44,7 +42,7 @@ class VacationController extends Controller
 
     public function showMyRequests()
     {
-        $vacations = Vacation::with('user')->where('status', 1)->whereHas('user', function($query){
+        $vacations = Vacation::with('user')->where('status', Vacation::PENDING)->whereHas('user', function($query){
             $query->where('email', Auth::user()->email);
         })->paginate(10);
 
@@ -55,7 +53,7 @@ class VacationController extends Controller
 
     public function allVacationRequests()
     {
-        if(UserRoles::check() === 1){
+        if(UserRoles::check() === Role::ADMIN){
            $vacations =  VacationQuerys::adminVacationRequests();
 
         }else{
@@ -94,14 +92,14 @@ class VacationController extends Controller
        if($request->submit == 'approve'){
             VacationQuerys::save([
                 'id' => $id,
-                'status' => 2,
+                'status' => UserVacation::APPROVED,
                 'comment' => $request->comment,
             ]);
 
        }else{
             VacationQuerys::save([
                 'id' => $id,
-                'status' => 3,
+                'status' => UserVacation::DENIED,
                 'comment' => $request->comment,
             ]);
        }
@@ -116,29 +114,29 @@ class VacationController extends Controller
     public function myFinishedRequests()
     {
 
-        $vacations = Vacation::with('userVacation')->where([
-            ['status',2 ],
+        $vacations = Vacation::where([
+            ['status', Vacation::FINISHED],
             ['user_id', Auth::user()->id],
-            ])->get();
+            ])->paginate(10);
 
-        foreach ($vacations as $vacation) {
-            echo $vacation->userVacation;
-        }
-        die();
-     /*   $userVacation = UserVacation::where('vacation_id', 4)->get();
-        echo $userVacation;
-        die(); */
         return view('vacations.myFinishedRequests')->with([
             'vacations' => $vacations,
         ]);     
     }
 
+    public function myFinishedRequestDetails($id)
+    {
+        $result = VacationQuerys::requestDetails($id);
+        echo $result;
+        die();
+    }
+
     public function allFinishedRequests()
     {
-        if(UserRoles::check() === 1){
-            $vacations = Vacation::where('status', 2)->paginate(10);
+        if(UserRoles::check() === Role::ADMIN){
+            $vacations = Vacation::where('status', Vacation::FINISHED)->paginate(10);
         }else{
-            $vacations = Vacation::where('status', 2)->whereHas('userVacation', function($query){
+            $vacations = Vacation::where('status', Vacation::FINISHED)->whereHas('userVacation', function($query){
                 $query->where('user_id', Auth::user()->id);
             })->paginate(10);
         }
@@ -150,23 +148,8 @@ class VacationController extends Controller
 
     public function allFinishedRequestDetails($id)
     {
-        $status = 2;
-        $vacations = Vacation::with('user')->where('id', $id)->paginate(10);
-        $approvers = UserVacation::where('vacation_id', $id)->get();
-     
-        foreach ($approvers as $approver) {
-            if($approver->status === 3){
-                $status = 3;
-            }
-        } 
-        
-        foreach ($vacations as $vacation) {
-            return view('vacations.administrator.allFinishedRequestDetails')->with([
-                'vacation' => $vacation,
-                'approvers' => $approvers,
-                'status' => $status,
-            ]);
-        }
-       
+        $result = VacationQuerys::requestDetails($id);
+        echo $result;
+        die();
     }
 }

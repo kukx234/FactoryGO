@@ -3,25 +3,25 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Classes\UserRoles;
 use App\Models\User;
 use App\Models\UserRole;
-use App\Classes\UserRoles;
 
-class RemoveAdministrator extends Command
+class SetAdmin extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'remove:administrator {email}';
+    protected $signature = 'set:admin {email}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Remove administrator role from user';
+    protected $description = 'Set Administrator role to the user';
 
     /**
      * Create a new command instance.
@@ -46,8 +46,8 @@ class RemoveAdministrator extends Command
             $errorEmail = $this->argument('email');
             $this->error("Email $errorEmail does not exists in our database, please check email");
         }else{
-            UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsEmployee()]);
-            $this->info("Email $user->email is no longer administrator");
+            UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsAdmin()]);
+            $this->info("Email $user->email is set as Admin");
             }
     }
 }

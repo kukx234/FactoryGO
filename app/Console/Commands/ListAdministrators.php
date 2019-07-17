@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
+use App\Models\Role;
 
 class ListAdministrators extends Command
 {
@@ -41,7 +42,7 @@ class ListAdministrators extends Command
         $headers = ['Name','Email'];
 
         $users = User::whereHas('role', function($query){
-            $query->where('role_id', 1);
+            $query->where('role_name', Role::ADMIN);
         })->get(['name','email']);
 
         $this->table($headers,$users); 

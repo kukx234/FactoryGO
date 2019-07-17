@@ -5,12 +5,13 @@ namespace App\Classes;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Classes\UserRoles;
+use App\Models\Role;
 
 class UsersQuery 
 {
     public static function allUsers()
     {
-        if(UserRoles::check() === 1){
+        if(UserRoles::check() === Role::ADMIN ){
             return User::where('email', '!=', Auth::user()->email)->paginate(10);
 
         }else{
@@ -24,7 +25,7 @@ class UsersQuery
     public static function approvers()
     {
        return User::whereHas('role', function($query){
-            $query->where('role_id', 2);
+            $query->where('role_name', Role::APPROVER);
        })->get();
     }
 }

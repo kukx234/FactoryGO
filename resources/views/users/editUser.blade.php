@@ -22,8 +22,22 @@
                                 <input type="text" name="start_date" id="start_date" value="{{ $user->created_at }}" class="form-control"> 
                             </div>
 
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select name="role" id="role" class="custom-select mb-4" required>
+                                    @foreach ($roles as $role)
+                                        @if ($role->role_name === 'Employee')
+                                            <option value="{{ $role->role_name }}" selected>{{ $role->role_name }}</option>
+                                        @else
+                                            <option value="{{ $role->role_name }}">{{ $role->role_name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <label for="approvers">Approver</label>
                             <select name="approvers" id="approvers" class="custom-select mb-4" required>
+                                <option value="0" selected>--Select approver--</option>
                                 @foreach ($approvers as $approver)
                                     <option value="{{ $approver->id }}">{{ $approver->name }}</option>
                                 @endforeach

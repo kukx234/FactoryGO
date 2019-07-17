@@ -35,19 +35,19 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
-                        @if (Role::check() != 3)
+                        @if (Role::check() != Roles::EMPLOYEE)
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
                             aria-haspopup="true" aria-expanded="false">Users</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('allUsers') }}">All users</a>
-                                @if (Role::check() === 1)
+                                @if (Role::check() === Roles::ADMIN)
                                     <a class="dropdown-item" href="{{ route('addUser') }}">Add User</a>
                                 @endif
                             </div>
                         @endif
 
-                        @if(Role::check() === 1 || Role::check() === 2)
+                        @if(Role::check() === Roles::ADMIN || Role::check() === Roles::APPROVER)
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
                                 aria-haspopup="true" aria-expanded="false">All vacations request</a>

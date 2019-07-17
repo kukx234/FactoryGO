@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
+    const ADMIN = 'Admin';
+    const APPROVER = 'Approver';
+    const EMPLOYEE = 'Employee';
+    
     protected $fillable = [
         'role_name',
     ];
