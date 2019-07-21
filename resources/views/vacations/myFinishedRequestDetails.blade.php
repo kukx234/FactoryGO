@@ -11,6 +11,7 @@
                     <th>From</th>
                     <th>To</th>
                     <th>Requested days</th>
+                    <th>Number of Approvers</th>
                     <th>Requested at</th>
                     <th>Finished status</th>
                 </tr>
@@ -20,14 +21,9 @@
                <td>{{ $vacation->from }}</td>
                <td>{{ $vacation->to }}</td>
                <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
+               <td>{{ $countApprovers }}</td>
                <td>{{ $vacation->created_at }}</td>
-               <td>
-                   @if ($status === Status::DENIED)
-                        DENIED
-                   @else
-                       APPROVED
-                   @endif
-               </td>
+               <td>{{ $vacation->status }}</td>
             </tbody>
         </table>
 
@@ -37,6 +33,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Resolved at</th>
                         <th>Status</th>
                         <th>Comment</th>
                     </tr>
@@ -46,6 +43,7 @@
                         <tr>
                             <td>{{ $approver->user->name }}</td>
                             <td>{{ $approver->user->email }}</td>
+                            <td>{{ $approver->updated_at }}</td>
                             <td>{{ $approver->status }}</td>
                             <td>{{ $approver->comment }}</td>
                         </tr>
@@ -53,5 +51,16 @@
                 </tbody>
             </table>
     </div>
+    @if (Role::check() === Roles::ADMIN && $status === VacationStatus::DENIED)
+        <form action="{{ route('approveRequest', $vacation->id) }}" method="POST">
+            @csrf
+            <div class="form-group mt-5">
+                <label for="comment">Comment</label>
+                <textarea name="comment" id="comment"  cols="30" rows="10" class="form-control" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" value="Approved" name="submit">Approve</button>
+        </form>
+    @endif
 </div>
 @endsection

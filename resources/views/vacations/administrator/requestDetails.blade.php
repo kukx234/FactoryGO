@@ -10,6 +10,7 @@
                     <th>Name</th>
                     <th>From</th>
                     <th>To</th>
+                    <th>Number of approvers</th>
                     <th>Requested days</th>
                     <th>Requested at</th>
                 </tr>
@@ -18,6 +19,7 @@
                <td>{{ $vacation->user->name }}</td>
                <td>{{ $vacation->from }}</td>
                <td>{{ $vacation->to }}</td>
+               <td>{{  $countApprovers }}</td>
                <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
                <td>{{ $vacation->created_at }}</td>
             </tbody>
@@ -52,8 +54,8 @@
                 <textarea name="comment" id="comment"  cols="30" rows="10" class="form-control" required></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary" value="approve" name="submit">Approve</button>
-            <button type="submit" class="btn btn-secondary"  value="dissaprove" name="submit">Disapprove</button>
+            <button type="submit" class="btn btn-primary" value="Approved" name="submit">Approve</button>
+            <button type="submit" class="btn btn-secondary"  value="Denied" name="submit">Disapprove</button>
         </form>
 </div>
 @endsection

@@ -18,7 +18,6 @@
                     <th>Old Vacation</th>
                     <th>Vacation</th>
                     <th>Requested at</th>
-                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,7 +32,6 @@
                         <td>{{ $vacation->user->old_vacation }}</td>
                         <td>{{ $vacation->user->new_vacation }}</td>
                         <td>{{ $vacation->created_at }}</td>
-                        <td><a href="{{ route('requestDetails', $vacation->id)}}" class="btn btn-primary">More info</a></td>
                     </tr>
                 @endforeach
             </tbody>

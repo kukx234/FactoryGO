@@ -42,8 +42,13 @@
                                     <option value="{{ $approver->id }}">{{ $approver->name }}</option>
                                 @endforeach
                             </select>
+                            
+                            @if ($user->status === UserStatus::ACTIVE)
+                                <button type="submit" class="btn btn-primary mr-4" name="submit" value="save">Save</button>
+                            @else
+                                <button type="submit" class="btn btn-primary mr-4" name="submit" value="saveAndActivate">Save and Activate</button>
+                            @endif
 
-                            <button type="submit" class="btn btn-primary mr-4" name="submit" value="save">Save and Activate</button>
                             <button type="submit" class="btn btn-danger" name="submit" value="suspend">Suspend</button>
                             <a href="{{ route('allUsers') }}" class="btn btn-secondary">Cancel</a>
                         </form>

@@ -6,6 +6,9 @@ use App\Models\Vacation;
 use App\Models\UserVacation;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserApprover;
+use App\Classes\UserRoles;
+use App\Models\Role;
+use App\Models\User;
 
 class VacationQuerys 
 {
@@ -19,9 +22,14 @@ class VacationQuerys
         ]);
     }
 
-    public static function checkIfFinished($id)
-    {
+    public static function checkIfFinished($id , $status) 
+    { 
         $user_vacation_approvers = UserVacation::with('vacation')->where('vacation_id', $id)->get();
+       
+        if(UserRoles::check() === Role::ADMIN){
+            Vacation::where('id', $id)->update(['status' => $status]);
+            self::reduceVacationDays($id);
+        } 
 
         if( !$user_vacation_approvers->isEmpty() ){
            
@@ -30,11 +38,14 @@ class VacationQuerys
             }
             
             $user_approvers = UserApprover::with('user')->where('user_id', $user_id)->get();
-    
-            if(count($user_vacation_approvers) >= count($user_approvers)){
-                //u tablici vacation ce biti status 1 pending i status 2 finished
-                Vacation::where('id', $id)->update([ 'status' => Vacation::FINISHED ]);
+
+            if(count($user_vacation_approvers) >= count($user_approvers) &&
+                    UserRoles::check() != Role::ADMIN){
+             
+                Vacation::where('id', $id)->update([ 'status' => $status ]);
+                self::reduceVacationDays($id);
             }
+
         }
     }
 
@@ -43,7 +54,7 @@ class VacationQuerys
         return Vacation::with('user','userVacation')->where('status', Vacation::PENDING)
             ->whereDoesntHave('userVacation', function($query){
                 $query->where('user_id',  Auth::user()->id);
-            })->paginate(10);
+            })->orderBy('created_at')->paginate(10);
     }
 
     public static function approverVacationRequests()
@@ -56,29 +67,51 @@ class VacationQuerys
                 $query->whereHas('userApprover',function($q){
                     $q->where('approver_id', Auth::user()->id);
                 });
-            })->paginate(10);
+            })->orderBy('created_at')->paginate(10);
     }
 
     public static function requestDetails($id)
     {
-        $status = 2;
         $vacations = Vacation::with('user')->where('id', $id)->get();
-        $approvers = UserVacation::where('vacation_id', $id)->get();
-     
-        foreach ($approvers as $approver) {
-            if($approver->status === 3){
-                $status = 3;
-            }
-        } 
-
+        $approvers = UserVacation::with('user')->where('vacation_id', $id)->get();
+  
         foreach ($vacations as $vacation) {
             return view('vacations.myFinishedRequestDetails')->with([
                 'vacation' => $vacation,
                 'approvers' => $approvers,
-                'status' => $status,
+                'status' => $vacation->status,
+                'countApprovers' => self::countApprovers($vacation->user->id),
             ]);
         }
         
-
     }
+
+    public static function countApprovers($id)
+    {
+        $approvers = UserApprover::where('user_id', $id)->get();
+        
+        return count($approvers);
+    }
+
+    public static function reduceVacationDays($id)
+    {
+        $vacation = Vacation::with('user')->where('id', $id)->first();
+
+        if($vacation->status === Vacation::APPROVED){
+            $requested_days = (strtotime($vacation->to) - strtotime($vacation->from)) /86400;
+
+            if($vacation->user->old_vacation <= $requested_days ){
+                $residueDays = $requested_days - $vacation->user->old_vacation;
+                User::where('email',$vacation->user->email)->update([
+                    'old_vacation' => $vacation->user->old_vacation - $vacation->user->old_vacation,
+                    'new_vacation' => $vacation->user->new_vacation - $residueDays,
+                ]);
+            }else{
+                User::where('email', $vacation->user->email)->update([
+                    'old_vacation' => $vacation->user->old_vacation - $requested_days,
+                ]);
+            }
+        }
+    }
+    
 }

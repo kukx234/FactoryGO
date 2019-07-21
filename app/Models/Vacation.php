@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Vacation extends Model
 {
     const PENDING = 'Pending';
-    const FINISHED = 'Finished';
+    const DENIED = 'Denied';
+    const APPROVED = 'Approved';
     
     protected $fillable = [
         'from', 'to','user_id','status',

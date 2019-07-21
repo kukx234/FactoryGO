@@ -55,9 +55,11 @@ class ProductiveUser extends ProductiveClient
 
                     Auth::login($createUser);
                     return $status_code;
-
-                }else if(Auth::loginUsingId($user->id)){
-                    return $status_code;
+                }else{
+                    if($user->status != User::SUSPENDED){
+                        Auth::loginUsingId($user->id);
+                        return $status_code;
+                    }
                 }
             }
             
@@ -97,6 +99,9 @@ class ProductiveUser extends ProductiveClient
             $user = User::create([
                 'email' => $data['email'],
                 'name'  => $data['name'],
+                'status' => User::PENDING,
+                'old_vacation' => 0,
+                'new_vacation' => 0,
             ]);
         
         $user->role()->attach(UserRoles::setAsEmployee());

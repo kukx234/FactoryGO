@@ -12,7 +12,7 @@ class UsersQuery
     public static function allUsers()
     {
         if(UserRoles::check() === Role::ADMIN ){
-            return User::where('email', '!=', Auth::user()->email)->paginate(10);
+            return User::where('email', '!=', Auth::user()->email)->orderBy('status','desc')->paginate(10);
 
         }else{
             return User::whereHas('userApprover',function($query){
@@ -28,4 +28,12 @@ class UsersQuery
             $query->where('role_name', Role::APPROVER);
        })->get();
     }
+
+    public static function updateUser($email,$column,$value)
+    {
+        User::where('email', $email)->update([
+            $column => $value,
+            ]);
+    }
+
 }

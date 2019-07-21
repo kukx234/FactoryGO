@@ -69,6 +69,9 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'status' => User::PENDING,
+            'old_vacation' => 0,
+            'new_vacation' => 0,
         ]);
         
         $user->role()->attach(UserRoles::setAsEmployee());

@@ -228,7 +228,10 @@ return [
         'Role' => App\Classes\UserRoles::class,
         'Roles' => App\Models\Role::class,
         'Status' => App\Models\UserVacation::class,
-
+        'UserStatus' => App\Models\User::class,
+        'CountApprovers' => App\Classes\VacationQuerys::class,
+        'VacationStatus' => App\Models\Vacation::class,
+        
     ],
 
 ];

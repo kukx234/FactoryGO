@@ -35,6 +35,8 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
                         @auth
+                        @if(Auth::user()->status === UserStatus::ACTIVE)
+
                         @if (Role::check() != Roles::EMPLOYEE)
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" 
@@ -53,6 +55,7 @@
                                 aria-haspopup="true" aria-expanded="false">All vacations request</a>
                                 <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ route('allVacationRequests') }}">Request waiting</a>
+                                <a class="dropdown-item" href="{{ route('waitingOtherApprovers') }}">Waiting other approvers</a>
                                 <a class="dropdown-item" href="{{ route('allFinishedRequests') }}">Finished requests</a>
                                 </div>
                             </li>
@@ -66,6 +69,7 @@
                               <a class="dropdown-item" href="{{ route('myFinishedRequests') }}">Finished request</a>
                             </div>
                         </li>
+                        @endif
                         @endauth
                     </ul>
 
@@ -100,7 +104,7 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-
+                                    
                                     <a class="dropdown-item" href="{{ route('changePasswordForm') }}">
                                      Change password
                                     </a>

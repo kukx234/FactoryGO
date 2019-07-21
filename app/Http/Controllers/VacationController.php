@@ -83,13 +83,14 @@ class VacationController extends Controller
             return view('vacations.administrator.requestDetails')->with([
                 'vacation' => $vacation,
                 'approvers' => $approvers,
+                'countApprovers' => VacationQuerys::countApprovers($vacation->user->id),
             ]);
         }
     }
 
     public function approve(Request $request, $id)
     {   
-       if($request->submit == 'approve'){
+       if($request->submit == 'Approved'){
             VacationQuerys::save([
                 'id' => $id,
                 'status' => UserVacation::APPROVED,
@@ -104,7 +105,7 @@ class VacationController extends Controller
             ]);
        }
 
-       VacationQuerys::checkIfFinished($id);
+       VacationQuerys::checkIfFinished($id, $request->submit);
         
        return redirect()->route('allVacationRequests')->with([
             'Success' => 'Response to request saved successfully',
@@ -115,9 +116,9 @@ class VacationController extends Controller
     {
 
         $vacations = Vacation::where([
-            ['status', Vacation::FINISHED],
+            ['status','!=', Vacation::PENDING],
             ['user_id', Auth::user()->id],
-            ])->paginate(10);
+            ])->orderBy('created_at','desc')->paginate(10);
 
         return view('vacations.myFinishedRequests')->with([
             'vacations' => $vacations,
@@ -134,11 +135,11 @@ class VacationController extends Controller
     public function allFinishedRequests()
     {
         if(UserRoles::check() === Role::ADMIN){
-            $vacations = Vacation::where('status', Vacation::FINISHED)->paginate(10);
+            $vacations = Vacation::where('status','!=', Vacation::PENDING)->orderBy('created_at','desc')->paginate(10);
         }else{
-            $vacations = Vacation::where('status', Vacation::FINISHED)->whereHas('userVacation', function($query){
+            $vacations = Vacation::where('status','!=' , Vacation::PENDING)->whereHas('userVacation', function($query){
                 $query->where('user_id', Auth::user()->id);
-            })->paginate(10);
+            })->orderBy('created_at','desc')->paginate(10);
         }
 
         return view('vacations.administrator.allFinishedRequests')->with([
@@ -151,5 +152,17 @@ class VacationController extends Controller
         $result = VacationQuerys::requestDetails($id);
         echo $result;
         die();
+    }
+
+    public function waitingOtherApprovers()
+    {
+        $vacations = Vacation::with('user','userVacation')->where('status', Vacation::PENDING)
+        ->whereHas('userVacation', function($query){
+            $query->where('user_id', Auth::user()->id);
+        })->paginate(10);
+
+        return view('vacations.administrator.waitingOtherApprovers')->with([
+            'vacations' => $vacations,
+        ]);
     }
 }

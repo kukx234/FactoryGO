@@ -46,6 +46,9 @@ class SetAdmin extends Command
             $errorEmail = $this->argument('email');
             $this->error("Email $errorEmail does not exists in our database, please check email");
         }else{
+            if($user->status === 'Pending'){
+                User::where('email', $this->argument('email'))->update(['status' => 'Active']);
+            }
             UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsAdmin()]);
             $this->info("Email $user->email is set as Admin");
             }

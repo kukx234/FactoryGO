@@ -33,48 +33,52 @@ Route::name('changePasswordForm')->get('changePassword', function(){
 })->middleware('auth');
 Route::name('password.change')->post('changePassword','PasswordController@changePassword');
 
-
-
-//administration
-Route::middleware(['auth','role:Admin'])->group(function(){
-    //add user
-    Route::name('addUser')->get('addUser','ProductiveUsersController@addUserList');
-    Route::name('search')->post('addUser', 'ProductiveUsersController@find');
-    Route::name('saveNewUser')->get('save/{id}', 'ProductiveUsersController@saveNewUser');
-
-    //Edit user
-    Route::name('editUser')->get('editUser/{id}', 'UsersController@showEditForm');
-    Route::name('updateUser')->patch('editUser/{id}', 'UsersController@update');
-   
-});
-
-Route::middleware(['auth', 'role:Admin,Approver'])->group(function(){
-    //all users vacations requests
-    Route::name('allVacationRequests')->get('vacationRequests', 'VacationController@allVacationRequests');
-    Route::name('requestDetails')->get('details/{id}', 'VacationController@requestDetails');
-    Route::name('approveRequest')->post('vacation/{id}', 'VacationController@approve');
-
-    //all finished requests
-    Route::name('allFinishedRequests')->get('allFinishedRequests', 'VacationController@allFinishedRequests');
-    Route::name('allFinishedRequestDetails')->get('allFinishedRequestDetails/{id}', 'VacationController@allFinishedRequestDetails');
+Route::middleware('userStatus:Active')->group(function(){
     
-    //all users
-    Route::name('allUsers')->get('allUsers', 'UsersController@showAllUsers');
-});
+    //administration
+    Route::middleware(['auth','role:Admin'])->group(function(){
+        //add user
+        Route::name('addUser')->get('addUser','ProductiveUsersController@addUserList');
+        Route::name('search')->post('addUser', 'ProductiveUsersController@find');
+        Route::name('saveNewUser')->get('save/{id}', 'ProductiveUsersController@saveNewUser');
 
-//my vacations requests
-
-Route::middleware('auth')->group(function(){
-    //My Requests
-    Route::name('newRequestForm')->get('newRequest', function(){
-        return view('vacations.newRequest');
+        //Edit user
+        Route::name('editUser')->get('editUser/{id}', 'UsersController@showEditForm');
+        Route::name('updateUser')->patch('editUser/{id}', 'UsersController@update');
     });
-    Route::name('newRequest')->post('newRequest','VacationController@create');
-    Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
-    Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
-    Route::name('myFinishedRequests')->get('myFinishedRequests', 'VacationController@myFinishedRequests');
-    Route::name('myFinishedRequestDetails')->get('myFinishedRequestDetails/{id}', 'VacationController@myFinishedRequestDetails');
+
+    Route::middleware(['auth', 'role:Admin,Approver'])->group(function(){
+        //all users vacations requests
+        Route::name('allVacationRequests')->get('vacationRequests', 'VacationController@allVacationRequests');
+        Route::name('requestDetails')->get('details/{id}', 'VacationController@requestDetails');
+        Route::name('approveRequest')->post('vacation/{id}', 'VacationController@approve');
+        Route::name('waitingOtherApprovers')->get('requestsForOtherApprover', 'VacationController@waitingOtherApprovers');
     
+        //all finished requests
+        Route::name('allFinishedRequests')->get('allFinishedRequests', 'VacationController@allFinishedRequests');
+        Route::name('allFinishedRequestDetails')->get('allFinishedRequestDetails/{id}', 'VacationController@allFinishedRequestDetails');
+        
+        //all users
+        Route::name('allUsers')->get('allUsers', 'UsersController@showAllUsers');
+        Route::name('userInfo')->get('userInfo/{id}', 'UsersController@userInfo');
+    });
+
+    //my vacations requests
+
+    Route::middleware('auth')->group(function(){
+        //My Requests
+        Route::name('newRequestForm')->get('newRequest', function(){
+            return view('vacations.newRequest');
+        });
+        Route::name('newRequest')->post('newRequest','VacationController@create');
+        Route::name('pendingRequests')->get('pendingRequests','VacationController@showMyRequests');
+        Route::name('deleteRequest')->get('delete/{id}','VacationController@deleteRequest');
+        Route::name('myFinishedRequests')->get('myFinishedRequests', 'VacationController@myFinishedRequests');
+        Route::name('myFinishedRequestDetails')->get('myFinishedRequestDetails/{id}', 'VacationController@myFinishedRequestDetails');
+        
+    });
+
+
 });
 
 

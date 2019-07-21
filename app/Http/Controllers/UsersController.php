@@ -38,6 +38,21 @@ class UsersController extends Controller
         ]);
     }
 
+    public function userInfo($id)
+    { 
+        $approvers = [];
+
+        $user_approvers =  UserApprover::where('user_id', $id)->get();
+        foreach ($user_approvers as $user_approver) {
+            $approvers[] = User::find($user_approver->approver_id);
+        }
+
+        return view('users.userInfo')->with([
+            'user' => User::find($id),
+            'approvers' => $approvers,
+        ]);
+    }
+
     public function update(Request $request, $id)
     {   
         $user = User::find($id);
@@ -47,15 +62,12 @@ class UsersController extends Controller
         }
 
         if($request->submit === 'suspend'){
-            echo 'bit ce suspendiran,radi se na tome :)';
-            die();
+            UsersQuery::updateUser($user->email,'status', User::SUSPENDED);
         }
 
-        //user status
-        //1- pending
-        //2- active
-        //3-suspended
-
+        if($request->submit === 'saveAndActivate'){
+            UsersQuery::updateUser($user->email,'status', User::ACTIVE);
+        }
         if ($request->role === 'Approver') {
             UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsApprover()]);
         
@@ -63,10 +75,18 @@ class UsersController extends Controller
             UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsEmployee()]);
         }
 
-        UserApprover::create([
-            'user_id' => $user->id,
-            'approver_id' => $request->approvers,
-        ]);
+        $users = User::with('userApprover')->where('id', $user->id)->whereHas('userApprover', function($query) use($request){
+            $query->where('approver_id', $request->approvers);
+        })->get();
+
+        if($users->isEmpty()){
+            if($request->approvers != 0){
+                UserApprover::create([
+                    'user_id' => $user->id,
+                    'approver_id' => $request->approvers,
+                ]);
+            }
+        }
 
         $user->fill($request->all());
         $user->save();

@@ -15,7 +15,7 @@ class CreateUsersApproversTable extends Migration
     {
         Schema::create('user_approvers', function (Blueprint $table) {
             $table->integer('user_id')->unsigned();
-            $table->integer('approver_id');
+            $table->integer('approver_id')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

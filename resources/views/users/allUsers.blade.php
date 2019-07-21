@@ -27,9 +27,15 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->created_at }}</td>
-                    <td></td>
-                    <td></td>
-                    <td><a href="{{ route('editUser',$user->id)}}" class="btn btn-secondary">Edit</a></td>
+                    <td>{{ floor($user->new_vacation) }} day</td>
+                    <td>{{ floor($user->old_vacation) }} day</td>
+                    <td>
+                        @if (Role::check() === Roles::ADMIN)
+                            <a href="{{ route('editUser',$user->id)}}" class="btn btn-secondary">Edit</a>
+                        @endif
+                        <a href="{{ route('userInfo',$user->id)}}" class="btn btn-primary">More info</a>
+                    </td>
+                    
                 </tr>
             @endforeach
         </tbody>
