@@ -62,11 +62,17 @@ class UsersController extends Controller
         }
 
         if($request->submit === 'suspend'){
-            UsersQuery::updateUser($user->email,'status', User::SUSPENDED);
+            $user->update(['status' => User::SUSPENDED]);
         }
 
         if($request->submit === 'saveAndActivate'){
-            UsersQuery::updateUser($user->email,'status', User::ACTIVE);
+            if($user->status === User::PENDING){
+                $user->update([ 
+                    'activated_at' => date('Y-m-d H:i:s') ,
+                    'requested_days' => 0,
+                    ]);
+            }
+            $user->update([ 'status' => User::ACTIVE ]);
         }
         if ($request->role === 'Approver') {
             UserRole::where('user_id', $user->id)->update([ 'role_id' => UserRoles::setAsApprover()]);

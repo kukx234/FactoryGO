@@ -28,12 +28,4 @@ class UsersQuery
             $query->where('role_name', Role::APPROVER);
        })->get();
     }
-
-    public static function updateUser($email,$column,$value)
-    {
-        User::where('email', $email)->update([
-            $column => $value,
-            ]);
-    }
-
 }

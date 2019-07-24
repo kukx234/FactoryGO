@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
+use App\Classes\VacationQuerys;
 
 class VacationMonthly extends Command
 {
@@ -37,22 +38,7 @@ class VacationMonthly extends Command
      * @return mixed
      */
     public function handle()
-    {
-        $users = User::all();
-
-        foreach ($users as $user) {
-            $start_date = \Carbon\Carbon::createFromFormat('d-m-Y', $user->created_at->format('d-m-Y'));
-            $current_date = \Carbon\Carbon::createFromFormat('d-m-Y', date('d-m-Y'));
-            $diff_in_months = $start_date->diffInMonths($current_date);
-            $six_months = $diff_in_months / 6;
-
-            if($diff_in_months > 0){
-                $user->update(['new_vacation' => $user->new_vacation + 1.67]);
-
-                if($six_months === intval($six_months)){
-                    $user->update(['new_vacation' => 20]);
-                }
-            }
-        }
+    { 
+       VacationQuerys::addVacationDays();
     }
 }

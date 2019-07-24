@@ -105,12 +105,49 @@ class VacationQuerys
                 User::where('email',$vacation->user->email)->update([
                     'old_vacation' => $vacation->user->old_vacation - $vacation->user->old_vacation,
                     'new_vacation' => $vacation->user->new_vacation - $residueDays,
+                    'requested_days' => $vacation->user->$requested_days + $residueDays,
                 ]);
             }else{
                 User::where('email', $vacation->user->email)->update([
                     'old_vacation' => $vacation->user->old_vacation - $requested_days,
                 ]);
             }
+        }
+    }
+
+    public static function addVacationDays()
+    {
+        $six_months = 0;
+        $requested_days = 0;
+        $users = User::with('vacation')->where('activated_at', '!=' , null )->get();
+     
+        foreach ($users as $user) {
+            $six_months = 0;
+
+            $current_date = \Carbon\Carbon::createFromFormat('d-m-Y', date('d-m-Y'));
+            $activated_at = \Carbon\Carbon::createFromFormat('d-m-Y', $user->activated_at->format('d-m-Y'));
+            $diff_in_years = \Carbon\Carbon::createFromFormat('d-m-Y', date('d-m-Y'))->diffInYears($user->activated_at);
+            $diff_in_months = $activated_at->diffInMonths($current_date);
+            
+            $vacation_months = $diff_in_months;
+            if($diff_in_years >= 1){
+                $vaacation_months = $diff_in_months % ($diff_in_years * 12);
+            }
+
+            for($i = 0; $i <= $vacation_months; $i++ ){
+                $monthly = ($i % 6) * 1.67;
+                if($i % 6 === 0 && $i != 0){
+                    $six_months = $six_months + 20;
+                }
+            }
+
+            if($user->requested_days > 0){
+                $requested_days = $user->requested_days;
+            }
+
+            $new_vacation = $six_months + $monthly - $requested_days;
+            $user->update(['new_vacation' => $new_vacation ]);
+            
         }
     }
     

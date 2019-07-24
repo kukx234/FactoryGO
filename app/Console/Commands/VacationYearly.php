@@ -41,8 +41,12 @@ class VacationYearly extends Command
         $users = User::all();
         
         foreach ($users as $user) {
-            $user->update(['old_vacation' => $user->new_vacation]);
-            $user->update(['new_vacation' => 0]);
+            $user->update([
+                'old_vacation' => $user->new_vacation,
+                'new_vacation' => 0,
+                'requested_days' => 0,
+                ]);
+            
         }
     }
 }

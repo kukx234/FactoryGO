@@ -14,13 +14,16 @@ class User extends Authenticatable
     const ACTIVE = 'Active';
     const SUSPENDED = 'Suspended';
 
+    protected $dates = ['activated_at'];
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','status','old_vacation','new_vacation'
+        'name', 'email', 'password','status','old_vacation',
+        'new_vacation','activated_at','requested_days',
     ];
 
     /**

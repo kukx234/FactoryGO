@@ -22,6 +22,8 @@ class CreateUsersTable extends Migration
             $table->string('status');
             $table->float('old_vacation')->nullable();
             $table->float('new_vacation')->nullable();
+            $table->timestamp('activated_at')->nullable();
+            $table->integer('requested_days')->nullable();
             $table->rememberToken()->nullable();
             $table->timestamps();
         });
