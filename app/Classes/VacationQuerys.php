@@ -72,18 +72,16 @@ class VacationQuerys
 
     public static function requestDetails($id)
     {
-        $vacations = Vacation::with('user')->where('id', $id)->get();
+        $vacation = Vacation::with('user')->where('id', $id)->first();
         $approvers = UserVacation::with('user')->where('vacation_id', $id)->get();
-  
-        foreach ($vacations as $vacation) {
-            return view('vacations.myFinishedRequestDetails')->with([
-                'vacation' => $vacation,
-                'approvers' => $approvers,
-                'status' => $vacation->status,
-                'countApprovers' => self::countApprovers($vacation->user->id),
-            ]);
-        }
         
+        $data = [
+            'vacation' => $vacation,
+            'approvers' => $approvers,
+            'countApprovers' => self::countApprovers($vacation->user->id),
+        ];
+
+        return $data;
     }
 
     public static function countApprovers($id)

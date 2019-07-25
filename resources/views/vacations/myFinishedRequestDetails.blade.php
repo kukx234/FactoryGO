@@ -17,13 +17,13 @@
                 </tr>
             </thead>
             <tbody>
-               <td>{{ $vacation->user->name }}</td>
-               <td>{{ $vacation->from }}</td>
-               <td>{{ $vacation->to }}</td>
-               <td>{{ (strtotime($vacation->to) - strtotime($vacation->from)) /86400}}</td>
-               <td>{{ $countApprovers }}</td>
-               <td>{{ $vacation->created_at }}</td>
-               <td>{{ $vacation->status }}</td>
+               <td>{{ $data['vacation']->user->name }}</td>
+               <td>{{ $data['vacation']->from }}</td>
+               <td>{{ $data['vacation']->to }}</td>
+               <td>{{ (strtotime($data['vacation']->to) - strtotime($data['vacation']->from)) /86400}}</td>
+               <td>{{ $data['countApprovers'] }}</td>
+               <td>{{ $data['vacation']->created_at }}</td>
+               <td>{{ $data['vacation']->status }}</td>
             </tbody>
         </table>
 
@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($approvers as $approver)
+                    @foreach ($data['approvers'] as $approver)
                         <tr>
                             <td>{{ $approver->user->name }}</td>
                             <td>{{ $approver->user->email }}</td>
@@ -51,8 +51,8 @@
                 </tbody>
             </table>
     </div>
-    @if (Role::check() === Roles::ADMIN && $status === VacationStatus::DENIED)
-        <form action="{{ route('approveRequest', $vacation->id) }}" method="POST">
+    @if (Role::check() === Roles::ADMIN && $data['vacation']->status === VacationStatus::DENIED)
+        <form action="{{ route('approveRequest', $data['vacation']->id) }}" method="POST">
             @csrf
             <div class="form-group mt-5">
                 <label for="comment">Comment</label>

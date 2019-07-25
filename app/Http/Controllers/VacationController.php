@@ -20,13 +20,13 @@ class VacationController extends Controller
         if(strtotime($today) > strtotime($request->from) || 
             strtotime($request->to) < strtotime($request->from)){
 
-                return redirect()->back()->with([
-                    'Error' => "Please chose date after $today ",
-                ]);
+            return redirect()->back()->with([
+                'Error' => "Please chose date after $today ",
+            ]);
 
         }else{
             $currentUserId = Auth::user()->id;
-        
+            
             Vacation::create([
                 'from' => $request->from,
                 'to' => $request->to,
@@ -34,6 +34,12 @@ class VacationController extends Controller
                 'user_id' => $currentUserId,
             ]);
             
+            if(UserRoles::check() === Role::ADMIN){
+                Vacation::where('user_id', $currentUserId)->update([
+                    'status' => 'Approved',
+                ]);
+            }
+
             return redirect()->route('home')->with([
                 'Success' => 'New vacation request successfully added',
             ]);
@@ -127,9 +133,11 @@ class VacationController extends Controller
 
     public function myFinishedRequestDetails($id)
     {
-        $result = VacationQuerys::requestDetails($id);
-        echo $result;
-        die();
+        $data = VacationQuerys::requestDetails($id);
+
+        return view('vacations.myFinishedRequestDetails')->with([
+            'data' => $data,
+        ]);
     }
 
     public function allFinishedRequests()
@@ -149,9 +157,11 @@ class VacationController extends Controller
 
     public function allFinishedRequestDetails($id)
     {
-        $result = VacationQuerys::requestDetails($id);
-        echo $result;
-        die();
+        $data = VacationQuerys::requestDetails($id);
+        
+        return view('vacations.myFinishedRequestDetails')->with([
+            'data' => $data,
+        ]);
     }
 
     public function waitingOtherApprovers()
